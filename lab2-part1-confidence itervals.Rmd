@@ -1,0 +1,115 @@
+---
+title: "Lab2 - inferential statistics - confidence intervals"
+author: "Isabel Sassoon"
+date: "27/09/2026"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Always load your libraries at the top of the markdown!
+
+```{r}
+library(ggplot2)
+```
+
+#Recap from week 1
+
+The following are the highlights from week 1:
+ - Different data types (numerical, categorical)
+ - How to summarise and explore each data type
+
+*As you work with data you may want to reflect on:*
+*What types of plots are suitable for numerical/continuous variables and which ones for categorical variables?*
+
+# Confidence Intervals in R
+
+We will be showing you how to use R to compute the confidence intervals for a proportion and for a mean.
+
+## Confidence interval for a proportion
+
+A Market research agency interviews a random sample of 1000 people who live in London, and finds that 49% of people suggest they will vote Labour for the London Mayor. Find a 95% and a 90% confidence interval for the true proportion of voters who will vote for a Labour Mayor.
+
+```{r}
+prop.test(490, 1000, conf.level = 0.95)
+```
+
+95 percent confidence interval:
+ 0.46 0.52
+
+
+## What about the 90% CI?
+
+
+```{r}
+prop.test(490, 1000, conf.level = 0.9)
+```
+
+The 90% confidence interval is
+
+ 0.46 0.52
+ 
+In this case when approximated to 2 decimal places the confidence intervals are almost identical! 
+
+## Confidence interval for the mean
+
+### Reading in from csv - use the skew data.csv
+
+A bit more practice in reading data into R. Make sure you have the skewdata.csv file in the same location as your R project.
+
+```{r}
+data<-read.csv("skewdata.csv")
+```
+
+## Explore the data
+
+```{r}
+summary(data)
+```
+
+This data contains only one variable. We can see its mean is 30.969. The minimum value is 4.9 and the maximum is 81.7.
+
+# Visualise the data
+
+It would be a good idea to explore this variable graphcally too:
+
+```{r}
+hist(data$values)
+```
+
+lets try again, but this time add some more cosmetic changes
+
+```{r}
+hist(data$values, main="Histogram of Values", xlab = "Values", breaks= 20)
+```
+
+**Which one do you prefer?**
+
+# What is the 95% confidence interval for this variable?
+
+This is looking at the confidence interval for the mean. Therefore we make use of the t.test function in R.
+
+```{r}
+t.test(data$values)
+```
+
+The 95 percent confidence interval: is 24.11 37.82
+ 
+## We can do the same for the 90 percent confidence interval
+
+This can be done by explicitly stating conf.level=0.9. The default for that value is 0.95.
+
+```{r}
+t.test(data$values, conf.level = 0.9)
+```
+90 percent confidence interval: 25.27 36.66
+
+We can see that the confidence interval is smaller as we decrease our confidence level. 
+
+*Try changing the confidence level again and see what happens?*
+
+
+
+

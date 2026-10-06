@@ -1,0 +1,279 @@
+---
+title: "QDA Lab 1 - A and B"
+author: "Isabel Sassoon"
+date: "2026-09-30"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Before we start
+
+Welcome to your first CS5701 RStudio lab! This document is an R Markdown file - a mix of text (like this) and grey "chunks" of R code that you can run.
+
+- To run a chunk, click the small green play arrow at the top-right corner of the chunk, or place your cursor inside it and press **Ctrl+Enter** (Windows) / **Cmd+Enter** (Mac).
+- The output (numbers, tables, plots) appears directly underneath the chunk.
+- You don't need to install anything for the core material today - the only extra package used anywhere in this document is `ggplot2`, and only in the stretch sections below.
+- If you haven't already installed R and RStudio, see the Week 0 material on Brightspace.
+
+A few common first-time hiccups, in case you hit them:
+
+- **"object ... not found"** - usually a typo in a name, or an earlier chunk hasn't been run yet. Chunks generally need to run top to bottom, in order.
+- **"could not find function"** - a function may belong to a package that hasn't been loaded yet with `library(...)`.
+- **"cannot open file / connection"** - R is looking in the wrong folder for a file. We'll cover this in the "Reading in a csv file" section below.
+
+Don't worry about memorising any of this now - we'll point it out again as we go, and we (and the GTAs) are here to help.
+
+**This is the extended version of today's lab.** It contains everything in the core walkthrough, plus optional **Stretch challenge** sections (marked like this one) are best suited to pathway B. These are entirely optional: work through the core material at your own pace first, and dip into the stretch boxes whenever you like, in any order. If you chose pathway A today you can always come back and try the stretch challenges in your own time.
+
+## 1. Describing Data
+
+Both during the QDA lecture and in the pre-reads material, we introduced measures of location and spread. Now let's practice computing them using R.
+
+### 1.1 Measures of location
+
+We'll start with a small vector of numbers:
+
+```{r}
+data_vector <- c(4, 7, 2, 5, 6, 2)
+```
+
+A quick note on what just happened: `c()` combines values into a single vector, and `<-` stores ("assigns") the result under a name we chose - here, `data_vector`.
+
+#### Mean
+
+```{r}
+mean(data_vector)
+```
+
+#### Median
+
+```{r}
+median(data_vector)
+```
+
+Do these values match what you'd get applying the definitions from the lecture by hand?
+
+#### Mode
+
+Unlike the mean and median, R has no built-in function for the mode (the most frequently occurring value).
+
+> **Stretch challenge: write your own mode function**
+>
+> Hint: turn the vector into a table of frequencies (`table()`), then find the category with the highest count.
+>
+> ```{r, eval=FALSE}
+> mode_fn <- function(v) {
+>   # your code here
+> }
+> ```
+
+<details>
+<summary>Click for one possible solution</summary>
+
+```{r}
+mode_fn <- function(v) {
+  freq_table <- table(v)
+  as.numeric(names(freq_table)[which.max(freq_table)])
+}
+
+mode_fn(data_vector)
+```
+
+Note: this simple version only returns one value even if there's a tie for most frequent. A further challenge: adapt it to return *all* the tied values.
+
+</details>
+
+#### Weighted mean
+
+You'll have seen in your induction talks (and in Brunel's Senate Regulations 3 and 4) that your grade point average takes into account the credit-weighting of each module. Here's what that calculation looks like in R:
+
+```{r}
+grade.point <- c(13, 16, 12)
+credit <- c(15, 15, 30)
+weighted.mean(grade.point, credit)
+```
+
+You don't need this for QDA itself, but it may come in handy later in the year!
+
+### 1.2 Measures of variation
+
+#### Range
+
+```{r}
+range(data_vector)
+```
+
+This returns the minimum and maximum value.
+
+#### Interquartile range (IQR)
+
+```{r}
+IQR(data_vector)
+```
+
+This is based on the 25th and 75th percentiles, which you can also compute directly:
+
+```{r}
+quantile(data_vector, c(0.25, 0.75))
+```
+
+#### Standard deviation and variance
+
+```{r}
+sd(data_vector)
+```
+
+```{r}
+var(data_vector)
+```
+
+#### All of the above, in one go
+
+```{r}
+summary(data_vector)
+```
+
+`summary()` returns the minimum, 25th percentile, median, mean, 75th percentile and maximum in one line - a quick way to get an overview of any numerical variable.
+
+## 2. Exploring a Real Dataset
+
+So far we've used numbers we typed in ourselves. In practice, data usually arrives as a file - most commonly a `.csv`.
+
+### Reading in a csv file
+
+- Download `worms.csv` from Brightspace.
+- Save it in the **same folder** as this `.Rmd` file. By default, R looks for files relative to the folder this file is saved in - if `worms.csv` isn't there, you'll get a "cannot open file" error.
+- Run the chunk below to read the data in:
+
+```{r}
+worms <- read.csv("worms.csv")
+```
+
+Check what the data looks like:
+
+```{r}
+head(worms, n = 10)
+```
+
+### Numerical summaries of categorical variables
+
+Recall from the lecture that the numerical summary for a categorical variable is a frequency table. This is straightforward in R:
+
+```{r}
+table(worms$Vegetation)
+```
+
+You can also cross-tabulate two categorical variables at once, creating a contingency table:
+
+```{r}
+table(worms$Damp, worms$Vegetation)
+```
+
+Try swapping in other columns from `worms` to explore further.
+
+> **Stretch challenge: relative and cumulative frequency**
+>
+> Build the full frequency table from the lecture - frequency, relative frequency, and cumulative frequency - for `Vegetation`:
+>
+> ```{r}
+> freq <- table(worms$Vegetation)
+> rel_freq <- prop.table(freq)
+> cum_freq <- cumsum(freq)
+>
+> data.frame(
+>   Frequency = as.vector(freq),
+>   Relative.Frequency = round(as.vector(rel_freq), 2),
+>   Cumulative.Frequency = as.vector(cum_freq),
+>   row.names = names(freq)
+> )
+> ```
+>
+> Do these numbers match what we built by hand in the lecture?
+
+### Graphical summaries for categorical variables
+
+A bar chart shows the frequency of each category:
+
+```{r}
+barplot(table(worms$Vegetation))
+```
+
+(Use the Help pane - type `?barplot` into the Console - to see how you could add a title to this plot.)
+
+### Graphical summaries for numerical variables
+
+#### Histogram
+
+A histogram shows the distribution of a numerical variable:
+
+```{r}
+hist(worms$Worm.density, xlab = "Density", ylab = "Count", main = "Distribution of Worm Density")
+```
+
+#### Box plot
+
+A box plot is useful for comparing a numerical variable across categories:
+
+```{r}
+boxplot(worms$Worm.density ~ worms$Damp)
+```
+
+From this plot: is the median worm density higher when the soil is damp, or when it isn't? Which group has the larger spread?
+
+
+> **Stretch challenge: using ggplot2**
+>
+> `ggplot2` is a widely-used, more flexible plotting package - you may already have met it if you used R in a previous module.
+>
+> ```{r}
+> library(ggplot2)
+> ```
+>
+> (If it isn't already installed on this machine: Tools -> Install Packages, or use the Packages tab.)
+>
+> Reproducing the bar chart, histogram and box plot above:
+>
+> ```{r}
+> ggplot(worms) + geom_bar(aes(x = Vegetation), fill = "steelblue") +
+>   labs(title = "Vegetation from the Worms data") +
+>   theme_classic()
+> ```
+>
+> ```{r}
+> ggplot(worms, aes(x = Worm.density)) +
+>   geom_histogram(fill = "steelblue") +
+>   labs(title = "Histogram of Worm Density") +
+>   theme_bw()
+> ```
+>
+> ```{r}
+> ggplot(worms, aes(x = Worm.density, y = Damp)) +
+>   geom_boxplot(fill = "steelblue2") +
+>   labs(title = "Box Plot of Worm Density by Damp") +
+>   theme_classic() +
+>   coord_flip()
+> ```
+>
+> A pie chart needs a little more setup - the frequency table has to be turned into a data frame first:
+>
+> ```{r}
+> w1 <- table(worms$Vegetation)
+> w2 <- as.data.frame(w1)
+> colnames(w2) <- c("Vegetation", "Frequency")
+>
+> ggplot(w2, aes(x = "", y = Frequency, fill = Vegetation)) +
+>   geom_bar(width = 1, stat = "identity") +
+>   coord_polar("y", start = 0) +
+>   labs(title = "Pie Chart for Vegetation in the Worms data")
+> ```
+>
+> There's a lot more `ggplot2` can do - see this [cheatsheet](https://github.com/rstudio/cheatsheets/blob/master/data-visualization-2.1.pdf) for an overview.
+
+## Over to you
+
+That's the guided part of today's lab. In the second half, you'll work through the independent practice worksheet (download it from Brightspace) - use this document as a reference. We and the GTAs will be around to help.
+
+If you've worked through all of the stretch challenges above, feel free to help a neighbour, or take a look ahead at next week's pre-reading.
