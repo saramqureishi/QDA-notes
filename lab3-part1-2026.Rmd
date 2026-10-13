@@ -1,0 +1,271 @@
+---
+title: "Lab-3-Part-1"
+author: "Dr Isabel Sassoon"
+date: "2026-10-14"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+library(effsize)
+library(ggplot2)
+```
+
+# Overview of the content
+
+This guided lab will cover **Hypothesis Testing and Effect Size**. There are 4 examples:
+
+1. The bags of flour example, where a sample mean is tested vs a population mean
+2. An example where a proportion of patients cured with a treatment is compared to the overall proportion of cured patients with no therapy.
+3. Starting from data (using the Iris data) we test:
+  (i) The mean of one column of the sample data against a population mean
+  (ii) Is the column of data normally distributed?
+4. Hypothesis testing when we have two samples (using the Iris data), where we:
+  (i) Split the data by flower species
+  (ii) Test whether the mean petal length is the same in two species
+  (iii) Look at the effect size of that difference
+  (iv) (OPTIONAL) Test whether the variance of petal length differs between two species
+
+## 1. Hypothesis testing the mean from a sample vs population mean {#ex1}
+
+
+ - Bags of flour are supposed to contain 2kg on average.
+ - A random sample of 20 bags found to have a mean weight of 1.97 Kg, with a standard deviation of 0.1kg
+ - Is the flour bagging machine working correctly?
+
+The hypotheses to test are $H_0: \mu=2$ and $H_1: \mu \ne 2$
+
+an alternative way to articulate your hypotheses:
+ - The NULL hypothesis (H0) is that the mean is equal to 2
+ - The Alternative hypothesis (H1) is that the mean is not equal to 2
+
+(You dont have to express these as equations)
+
+To run this hypothesis test, as it concerns a mean we can use the t.test function
+
+but first lets input and explore our sample of bags of flour
+
+```{r}
+#The data from the 20 bags of flour is:
+x<-c(2.207245, 1.775420, 1.952341, 1.858900, 1.988633, 2.022014, 2.069764, 2.059351, 1.795229,
+ 1.878749, 1.948378, 1.810573, 2.033145, 2.107444, 1.997445, 1.894465, 2.013665, 1.861908,
+2.142928, 1.954375)
+```
+
+It is always advisable to explore the data
+
+```{r}
+summary(x)
+```
+
+We can see that the mean of the sample is 1.969 and the values range between 1.775 and 2.2.07.
+
+We can also explore this graphically using a simple histogram:
+
+```{r}
+hist(x, main = "Histogram of weight of the bags of flour", xlab="weight in Kg", xlim=c(1.5,2.5), col="lightblue")
+```
+It is also possible to use the ggplot library to create a histogram.
+
+```{r}
+df<-as.data.frame(x)
+ggplot(df, aes(x=x)) + geom_histogram(bins=6) + ggtitle("Histogram using GGplot") + xlab("Weight in KG") + theme_minimal()
+```
+
+(Can you improve this? ... what about axis range?)
+
+### Now onto the hypothesis testing...
+
+The hypotheses to test are $H_0: \mu=2$ and $H_1: \mu \ne 2$
+
+To run this hypothesis test, as it concerns a mean we can use the t.test function
+
+
+```{r}
+t.test(x, mu=2.0, alternative="two.sided")
+```
+
+
+We can see from this test that the p-value is 0.25. We do not have enough evidence to reject the Null hypothesis.
+Intuitively this shows that even if the machine is working correctly there is a 25% chance of obtaining a sample of 20 that has a mean of 1.97 or more extreme.
+
+## 2. Hypothesis test sample proportion vs population
+
+A new drug therapy is tested. Of 50 patients in the study, 43 had no recurrence in their illness after 18 months. With no drug therapy, the expected percentage of no recurrence would have been 75%.
+
+Test at the 5% significance level the hypothesis that the **proportion** of patients with no recurrence has increased with the new therapy
+
+The hypothesis to be tested is:
+$H_0: \pi=0.75$ $H_1: \pi \gt 0.75$
+
+in the study (our sample data) the value of p is:
+
+```{r}
+43/50
+```
+
+So 86% of patients had no recurrence.
+
+Before running the test, it's worth checking the sample size is large enough for the normal approximation used by `prop.test` to be reliable. A common heuristic is that both $n\pi_0$ and $n(1-\pi_0)$ should be at least 5:
+
+$$n\pi_0 = 50 \times 0.75 = 37.5, \quad n(1-\pi_0) = 50 \times 0.25 = 12.5$$
+
+Both comfortably exceed 5, so we can go ahead.
+
+We can use the prop.test function to compute this
+
+```{r}
+prop.test(43,50, p=0.75,alternative = "greater" )
+```
+
+From this we can see the p-value is 0.05124 - just above our significance level of $\alpha=0.05$. The rule we use is to reject $H_0$ only when the p-value is less than or equal to $\alpha$, and this one is close enough that it's worth looking at the precise value rather than a rounded one: since 0.05124 > 0.05, we do **not** reject the NULL hypothesis $H_0$ - though it is a close call.
+
+## 3. Hypothesis Testing starting from raw data
+
+We may have a sample of data available to use for hypothesis testing. The Iris data is available in R
+
+In order to access it:
+
+```{r}
+head(iris)
+```
+This data has 4 measurements for each flower, and for each flower we also know what species it is.
+
+If we wanted to see how many species there are in the data and what they are:
+
+```{r}
+table(iris$Species)
+```
+
+
+Now we are going to look at the mean petal length for all flowers.
+
+In our sample in order to compute the mean we can use:
+
+```{r}
+mean(iris$Petal.Length)
+```
+
+### (i) Testing a hypothesis related to a mean
+The hypothesis we are asked to test is:
+mean petal length for all flowers = 4.0
+
+In this case $H_0: \mu =4$ and $H_1:\mu \ne 4$
+
+In order to test this hypothesis:
+
+```{r}
+t.test(iris$Petal.Length, mu=4, alternative = "two.sided")
+```
+
+From this output we can see that the p-value is 0.095, so with 95% confidence level ($\alpha=0.05$)
+we would not reject $H_0$ based on this sample of data.
+
+Intuitively there is a 9% chance of getting such a sample if the mean is 4.
+
+### (ii) Testing for normality
+Now lets look at testing for normality in one of the columns of data
+
+```{r}
+hist(iris$Petal.Length, main="Histogram of Petal length", xlab="Petal length")
+```
+ This simple histogram does not look very normally distributed
+
+ Another way to look at this is using a qqplot
+
+```{r}
+qqnorm(iris$Petal.Length)
+qqline(iris$Petal.Length, col = "steelblue", lwd = 2)
+```
+The qq plot confirms that the data is not normally distributed, if it was it would align to the blue line.
+
+```{r}
+shapiro.test(iris$Petal.Length)
+```
+
+This is a very small p-value, we reject the null hypothesis that petal length for all flower species in this sample is normally distributed.
+
+This isn't too surprising when we think about it: this dataset actually contains three different species with quite different petal lengths, so combining them all into one column gives us a mixture of three different distributions rather than one clean bell curve. This is exactly why, further down, we compare petal length species-by-species instead of treating the whole sample as one group.
+
+
+## 4. Hypothesis testing when we have two samples
+
+### Splitting the data by flower species
+Lets split the iris data by flower species, so that we can compare them.
+
+```{r}
+setosa.flowers<-subset(iris, iris$Species=="setosa")
+```
+
+(Notice that this code above is case sensitive - if you use =="Setosa" it wont return any flowers!)
+
+The same can be done for other flowers types:
+
+```{r}
+versicolor.flowers<-subset(iris, iris$Species=="versicolor")
+virginica.flowers<-subset(iris, iris$Species=="virginica")
+```
+
+### Testing two means
+Lets test to see if there is a different means between the two different flower species
+
+Before running the t-test, it's worth checking whether petal length looks reasonably normally distributed within each species separately, rather than relying on the pooled test from section 3(ii), which we already know fails because it mixes species together. Try this yourself:
+
+```{r}
+shapiro.test(versicolor.flowers$Petal.Length)
+shapiro.test(virginica.flowers$Petal.Length)
+```
+
+(Do these look more consistent with normality than the pooled column did? The t-test is reasonably robust to mild departures from normality, especially with reasonably-sized samples like these, but it's good practice to check rather than assume.)
+
+Hypothesis we are testing:
+
+$H_0: \mu_{vers}=\mu_{virg}$ $H_1: \mu_{vers} \ne \mu_{virg}$
+
+```{r}
+t.test(versicolor.flowers$Petal.Length,virginica.flowers$Petal.Length, alternative = "two.sided")
+```
+
+R has adjusted for the unequal variances, and the t-test concluded with a p-value that is very small. We can reject the Null Hypothesis H_0. The means are different.
+Intuitively it is very unlikely that these two flowers have the same mean petal length!
+
+### Effect size
+
+```{r}
+cohen.d(versicolor.flowers$Petal.Length,virginica.flowers$Petal.Length)
+```
+The effect size is large - combined with the significant t-test above, this tells us the difference between species is both statistically and practically meaningful.
+
+
+### (OPTIONAL) We can now compare two variances one from each of two different flower species
+
+Lets look at petal length and find the variance of petal length for both setosa and virginica flowers
+
+```{r}
+var(setosa.flowers$Petal.Length)
+```
+
+```{r}
+var(virginica.flowers$Petal.Length)
+```
+
+The test statistic is obtained by dividing the variances and then using the F - distribution
+
+```{r}
+var.setosa<-var(setosa.flowers$Petal.Length)
+var.virginica<-var(virginica.flowers$Petal.Length)
+f.st<-var.setosa/var.virginica
+f.st
+```
+
+This ratio looks very far from 1 so using the a built in function in R to perform the variance test
+```{r}
+var.test(setosa.flowers$Petal.Length,virginica.flowers$Petal.Length )
+```
+
+We confirm that the p-value is very small so such a ratio is very unlikely (if we assume $H_0$ of equal variances). We can conclude that the variances are different.
+
