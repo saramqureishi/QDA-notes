@@ -1,0 +1,233 @@
+---
+title: "CS5801 Coursework SUBMISSION Template Proforma"
+author: "student-id"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  pdf_document: default
+version: 1.1
+---
+
+# 0. Instructions
+
+*1. Remove the (italicised) guidance text but keep the section headings.*
+*2. Use the chunks of R code provided.*
+*3. This .rmd needs to run end to end without errors.*
+*4. Make sure you answer the question by including explanations (not just comments in code). Please be detailed and where you have made choices explain the rationale for them. Avoid including any generic definitions.*
+*5. Write your report using RMarkdown.*
+*6. If you copied code or text (e.g. from a GenAI Chatbot or other source) then reference it as such (e.g. source Claude) either in the code chunk or in brackets after the text. See guidance on using AI in the Assessment Brief for this assessment.*
+*7. Where a section is split into labelled parts (a, b, c ...), answer each part separately under its label and keep to the word count for the section as a whole.*
+
+# Guidance for all sections
+
+*(i). Your submission rmd should be clearly and professionally presented with appropriate use of cited external sources. Your report should respect the sections, code chunks and the word counts in each section and a supporting proforma.rmd should also be submitted. The report should not include generic definitions or statements that are not linked to your analysis (10 marks)*
+*(ii). The code needs to run end to end in both the submission rmd (this one) and the supporting one. It should also be easy to understand, with well-documented code following the principles of literate programming. The code documentation needs to be specific to your analysis (10 marks)*
+
+
+
+```{r}
+# Add code here to load all the required libraries with `library()`.
+# Do not include any `install.package()` for any required packages in this rmd file.
+```
+
+
+# 1. Organise and clean the data
+
+## 1.1 Subset the data into the specific dataset allocated
+
+*A description of the data set provided, its contents and which subset you should select is documented in the assessment brief at CS5801-Assessment Brief 2026-27.pdf. The metadata for the health club data set is provided with the brief.*
+
+*Use R code to correctly select the subset of data allocated. (5 marks)*
+
+```{r}
+# Only change the value for SID
+# Assign your student id into the variable SID, for example:
+SID <- 2101234                 # This is an example, replace 2101234 with your actual ID
+SIDoffset <- (SID %% 50) + 1    # Your SID mod 50 + 1
+
+load("health_club.Rda")
+# Now subset the health club data set
+# Pick every 50th observation starting from your offset
+# Put into your data frame named mydf (you can rename it)
+mydf <- df[seq(from=SIDoffset,to=nrow(df),by=50),]
+```
+
+
+## 1.2 Data quality plan
+
+*Provide a description of the steps you took to assess the quality of this data. Include and refer to all variables/columns from the data set, and say what you compared them against (for example the metadata). This subsection should not include code. (5 marks) . (Max 150 words)*
+
+## 1.3 Data quality findings
+
+*List three data quality issues you have identified. For each one include the code that supports the finding in the code chunks provided (9 marks).(Max 250 words)*
+
+### (a) Issue 1
+
+```{r}
+
+```
+
+
+### (b) Issue 2
+
+```{r}
+
+```
+
+
+### (c) Issue 3
+
+```{r}
+
+```
+
+
+
+## 1.4 Data cleaning
+
+*For the three issues listed in 1.3 explain how you addressed each of the issues. Include justification for each of the approaches to address the issue, alternative approaches considered and supply the code within the code chunks provided. (6 marks). (Max 200 words)*
+
+
+### (a) Addressing Issue 1
+
+```{r}
+
+```
+
+
+### (b) Addressing Issue 2
+
+```{r}
+
+```
+
+
+### (c) Addressing Issue 3
+
+```{r}
+
+```
+
+# 2. Exploratory Data Analysis (EDA)
+
+*In this section include:*
+
+*(a) A brief explanation of your approach to exploring the data set, with respect to the two dependent variables (`monthly_spend` and `cancelled`).*
+
+*(b) Three elements of your exploratory analysis that you find are most informative. Between them, these should cover both dependent variables: at least one element must relate to `monthly_spend` and at least one to `cancelled`. Include the code for each one (in the separate chunks provided) and explain and interpret the output and also articulate why this is informative and helpful. (You should provide the code for your other exploration in the supporting proforma.) (15 marks) (Max 250 words)*
+
+### Element 1
+
+```{r}
+
+```
+
+### Element 2
+
+```{r}
+
+```
+
+### Element 3
+
+```{r}
+
+```
+
+
+# 3. Modelling `monthly_spend`
+
+## 3.1 Explain your analysis
+
+*The aim of the analysis is to model the numeric variable `monthly_spend`. Describe and justify the steps you took to model this variable (don't include or repeat the data cleaning and EDA plan). Answer each part below under its own label and be specific to your data set in your justifications. (10 marks). (Max 250 words)*
+
+
+### (a) Candidate and derived variables
+*Candidate and derived variables: Which variables did you consider as explanatory variables and why (refer to your EDA)? Did you derive or transform any variables, and why? Which variables, if any, did you decide not to use?*
+
+
+### (b) Model simplification / selection
+*Model simplification and model selection: What approach did you take and why? What aspects did you compare?*
+
+
+### (c) Weaknesses
+*Weaknesses: What weaknesses did you find in your models and how did you address them?*
+
+
+
+## 3.2 Modelling `monthly_spend`
+
+*Include the code for your starting model and your proposed model in the code chunks provided. Do not include code for all the models you considered, that code should be in the supporting pro-forma and the process you went through is described in 3.1.*
+
+*Answer each part below under its own label (10 marks). (Max 150 words)*
+
+*NB Submissions where suitable models do not have good fit due to the nature of the data will not be penalised.*
+
+### (a) Initial Model 
+
+
+```{r}
+
+```
+
+
+### (b) Proposed model
+*Proposed model and justification: Which one model do you propose and why is it the most suitable?*
+
+```{r}
+
+```
+
+### (c) Proposed model diagnostics
+
+
+```{r}
+
+```
+
+### (d) Proposed model interpretation
+
+
+```{r}
+
+```
+
+
+# 4. Model the likelihood of a member cancelling their membership
+
+*The aim of the analysis is to model whether a member cancelled their membership. Describe and justify the steps you took (don't include or repeat the data cleaning and EDA plan) to select your model's explanatory variables. Answer each part below under its own label and be specific to your data set in your justifications. Include the code for your starting model, proposed model and interpretation in the chunks provided (20 marks). (Max 350 words)*
+
+*NB Submissions where suitable models do not have good fit due to the nature of the data will not be penalised.* 
+
+### (a) Initial Model
+*Candidate and derived variables: Which variables did you consider as explanatory variables and why (refer to your EDA)? Did you derive or transform any variables, and how did you code the outcome?*
+
+
+```{r}
+
+```
+
+
+### (b) Model selection and comparison
+*What approach did you take and why? What aspects did you compare?*
+
+
+### (c) Proposed model and justification
+*Which one model do you propose and why is it the most suitable?*
+
+
+```{r}
+
+```
+
+
+### (d) Interpreting the model
+
+
+```{r}
+
+```
+
+
+# References
+
+*Add any references here. NB You can either do this manually or automatically with a `.bib` file (which then must be submitted along with your `.Rmd` file).  See the RMarkdown [documentation](https://bookdown.org/yihui/rmarkdown-cookbook/bibliography.html) for guidance.*

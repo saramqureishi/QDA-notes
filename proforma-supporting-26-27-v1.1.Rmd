@@ -1,0 +1,70 @@
+---
+title: "CS5801 Coursework Supporting analysis Template Proforma"
+author: "student-id"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  pdf_document: default
+version: 1.1
+---
+
+# 0. Instructions
+
+*This markdown is to be submitted in support of the one that will be used for marking. This may be used to confirm that the results presented in the submission are justified and that the claims made are evidenced.*
+
+*1. Keep the section headings.*
+
+*2. Add as many chunks of R code as required.*
+
+*3. Write your report using RMarkdown.  For guidance see a [helpful blog](https://www.dataquest.io/blog/r-markdown-guide-cheatsheet/#tve-jump-17333da0719) or use the R Markdown cheatsheet which can be accessed from within RStudio by selecting `Help > Cheatsheets > R Markdown Cheat Sheet`.*
+
+*4. This markdown document needs to run end to end without errors.*
+
+
+```{r}
+# Add code here to load all the required libraries with `library()`.
+# Do not include any `install.package()` for any required packages in this rmd file.
+```
+
+
+# 1. Organise and clean the data
+
+## 1.1 Subset the data into the specific dataset allocated
+
+*A description of the data set provided, its contents and which subset you should select is documented in the assessment brief at CS5801-Assessment Brief 2026-27.pdf. The metadata for the health club data set (column definitions, units and expected values) is provided with the brief.*
+
+*Use R code to correctly select the subset of data allocated.*
+
+```{r}
+# Only change the value for SID
+# Assign your student id into the variable SID, for example:
+SID <- 2101234                 # This is an example, replace 2101234 with your actual ID
+SIDoffset <- (SID %% 50) + 1    # Your SID mod 50 + 1
+
+load("health_club.Rda")
+# Now subset the health club data set
+# Pick every 50th observation starting from your offset
+# Put into your data frame named mydf (you can rename it)
+mydf <- df[seq(from=SIDoffset,to=nrow(df),by=50),]
+```
+
+
+# 1. Data quality
+*Add any relevant code and notes related to section 1*
+
+# 2. Exploratory Data Analysis (EDA)
+
+*Add any relevant code and notes related to section 2*
+
+
+# 3. Modelling `monthly_spend`
+
+*Add any relevant code and notes related to section 3*
+
+
+# 4. Modelling `cancelled`
+
+*Add any relevant code and notes related to section 4*
+
+# References
+
+*Add any references here. NB You can either do this manually or automatically with a `.bib` file (which then must be submitted along with your `.Rmd` file).  See the RMarkdown [documentation](https://bookdown.org/yihui/rmarkdown-cookbook/bibliography.html) for guidance.*
