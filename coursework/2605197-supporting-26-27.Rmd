@@ -1,0 +1,109 @@
+---
+title: "CS5801 Coursework Supporting analysis Template Proforma"
+author: "2605197"
+date: "`r format(Sys.time(), '%d %B, %Y')`"
+output:
+  pdf_document: default
+version: 1.1
+---
+
+# 0. Instructions
+
+*This markdown is to be submitted in support of the one that will be used for marking. This may be used to confirm that the results presented in the submission are justified and that the claims made are evidenced.*
+
+*1. Keep the section headings.*
+
+*2. Add as many chunks of R code as required.*
+
+*3. Write your report using RMarkdown.  For guidance see a [helpful blog](https://www.dataquest.io/blog/r-markdown-guide-cheatsheet/#tve-jump-17333da0719) or use the R Markdown cheatsheet which can be accessed from within RStudio by selecting `Help > Cheatsheets > R Markdown Cheat Sheet`.*
+
+*4. This markdown document needs to run end to end without errors.*
+
+
+```{r}
+# Add code here to load all the required libraries with `library()`.
+# Do not include any `install.package()` for any required packages in this rmd file.
+```
+
+
+# 1. Organise and clean the data
+
+## 1.1 Subset the data into the specific dataset allocated
+
+*A description of the data set provided, its contents and which subset you should select is documented in the assessment brief at CS5801-Assessment Brief 2026-27.pdf. The metadata for the health club data set (column definitions, units and expected values) is provided with the brief.*
+
+*Use R code to correctly select the subset of data allocated.*
+
+```{r}
+# Only change the value for SID
+# Assign your student id into the variable SID, for example:
+SID <- 2605197
+SIDoffset <- (SID %% 50) + 1    # Your SID mod 50 + 1
+
+load("health_club.Rda")
+# Now subset the health club data set
+# Pick every 50th observation starting from your offset
+# Put into your data frame named mydf (you can rename it)
+mydf <- df[seq(from=SIDoffset,to=nrow(df),by=50),]
+```
+
+
+# 1. Data quality
+
+## 1.A First look at every column
+```{r}
+str(mydf)        # column types: is join_date a date? are categories text?
+summary(mydf)    # min/max of numeric columns, to compare with the metadata ranges
+```
+
+## 1.B Categorical columns: are all values valid?
+```{r}
+# Valid values come from the metadata in the assessment brief
+table(mydf$membership_type)   # should only be Basic, Standard, Premium, Student
+table(mydf$joined_via)        # should only be Online, Walk-in, Referral, Corporate
+table(mydf$membership_status) # active, active_deal, suspended
+table(mydf$cancelled)         # Yes, No
+```
+
+## 1.C Rows that break the metadata rules
+```{r}
+valid_types <- c("Basic", "Standard", "Premium", "Student")
+# Misspelt membership_type
+mydf[!(mydf$membership_type %in% valid_types), ]
+
+# rating must be 1 to 10
+mydf[mydf$rating < 1 | mydf$rating > 10, ]
+
+# join_date must be 2016-01-01 to 2026-09-30
+mydf$join_date <- as.Date(mydf$join_date)
+mydf[mydf$join_date < as.Date("2016-01-01") | mydf$join_date > as.Date("2026-09-30"), ]
+
+# other ranges from the metadata
+sum(mydf$distance < 0.1 | mydf$distance > 40)
+sum(mydf$monthly_spend == 0)     # zero spend: possible but worth checking
+anyNA(mydf)                      # any missing values?
+sum(duplicated(mydf))            # any duplicate rows?
+```
+
+## 1.D Does membership_status give away cancelled?
+```{r}
+table(mydf$membership_status, mydf$cancelled)
+```
+
+# 2. Exploratory Data Analysis (EDA)
+
+*Add any relevant code and notes related to section 2*
+
+
+# 3. Modelling `monthly_spend`
+
+*Add any relevant code and notes related to section 3*
+
+
+# 4. Modelling `cancelled`
+
+*Add any relevant code and notes related to section 4*
+
+# References
+
+*Add any references here. NB You can either do this manually or automatically with a `.bib` file (which then must be submitted along with your `.Rmd` file).  See the RMarkdown [documentation](https://bookdown.org/yihui/rmarkdown-cookbook/bibliography.html) for guidance.*
